@@ -1,0 +1,142 @@
+{% extends 'main/base.html' %}
+
+{% block page_title %}Inventory Grid{% endblock %}
+
+{% block content %}
+<div class="space-y-6 relative z-10">
+    <!-- Filters -->
+    <div class="glass-card rounded-2xl p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Search</label>
+                    <input type="text" id="search-input" placeholder="Search items..." class="w-full md:w-64 px-4 py-2.5 border border-gray-200/50 dark:border-slate-600/50 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent transition-all duration-300 shadow-lg shadow-gray-200/50 dark:shadow-slate-800/50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select id="status-filter" class="w-full md:w-40 px-4 py-2.5 border border-gray-200/50 dark:border-slate-600/50 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent transition-all duration-300 shadow-lg shadow-gray-200/50 dark:shadow-slate-800/50">
+                        <option value="all">All</option>
+                        <option value="OK">OK</option>
+                        <option value="Warning">Warning</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Branch</label>
+                    <select id="branch-filter" class="w-full md:w-40 px-4 py-2.5 border border-gray-200/50 dark:border-slate-600/50 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent transition-all duration-300 shadow-lg shadow-gray-200/50 dark:shadow-slate-800/50">
+                        <option value="all">All Branches</option>
+                        <option value="hargeisa">Hargeisa</option>
+                        <option value="mogadishu">Mogadishu</option>
+                        <option value="ethiopia">Ethiopia</option>
+                        <option value="djibouti">Djibouti</option>
+                    </select>
+                </div>
+            </div>
+            <button class="px-5 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 self-start">
+                Export Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="glass-card rounded-2xl p-6">
+        <div class="overflow-x-auto">
+            <table class="w-full" id="inventory-table">
+                <thead>
+                    <tr class="border-b border-gray-200/50 dark:border-slate-700/50">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Item</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Part No.</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Hargeisa</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Mogadishu</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Ethiopia</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Djibouti</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Total</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Reorder Level</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Status</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-body">
+                    {% for item in inventory %}
+                    <tr class="border-b border-gray-100/50 dark:border-slate-800/50 hover:bg-white/50 dark:hover:bg-slate-800/50 inventory-row transition-colors" data-status="{{ item.status }}" data-search="{{ item.item|lower }} {{ item.part_no|lower }}">
+                        <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">{{ item.item }}</td>
+                        <td class="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">{{ item.part_no }}</td>
+                        <td class="py-3 px-4 text-center text-gray-700 dark:text-gray-300 font-medium">{{ item.hargeisa }}</td>
+                        <td class="py-3 px-4 text-center text-gray-700 dark:text-gray-300 font-medium">{{ item.mogadishu }}</td>
+                        <td class="py-3 px-4 text-center text-gray-700 dark:text-gray-300 font-medium">{{ item.ethiopia }}</td>
+                        <td class="py-3 px-4 text-center text-gray-700 dark:text-gray-300 font-medium">{{ item.djibouti }}</td>
+                        <td class="py-3 px-4 text-center font-bold gradient-text">{{ item.total }}</td>
+                        <td class="py-3 px-4 text-center text-gray-700 dark:text-gray-300">{{ item.reorder }}</td>
+                        <td class="py-3 px-4 text-center">
+                            {% if item.status == 'OK' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-700 dark:text-green-400 border border-green-200/50 dark:border-green-500/30">OK</span>
+                            {% else %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-700 dark:text-red-400 border border-red-200/50 dark:border-red-500/30">Warning</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <button class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-semibold">Edit</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="glass-card rounded-2xl p-6 card-hover transition-all">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Items</p>
+            <p class="text-3xl font-bold gradient-text mt-2">{{ inventory|length }}</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 card-hover transition-all">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Items Requiring Reorder</p>
+            <p class="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">3</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 card-hover transition-all">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Stock Value</p>
+            <p class="text-3xl font-bold gradient-text mt-2">$2.4M</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 card-hover transition-all">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Warehouses Active</p>
+            <p class="text-3xl font-bold gradient-text mt-2">4</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple filtering functionality
+    document.getElementById('search-input').addEventListener('input', filterTable);
+    document.getElementById('status-filter').addEventListener('change', filterTable);
+    document.getElementById('branch-filter').addEventListener('change', filterTable);
+
+    function filterTable() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const statusFilter = document.getElementById('status-filter').value;
+        const branchFilter = document.getElementById('branch-filter').value;
+        
+        const rows = document.querySelectorAll('.inventory-row');
+        
+        rows.forEach(row => {
+            const searchData = row.getAttribute('data-search');
+            const statusData = row.getAttribute('data-status');
+            
+            let showRow = true;
+            
+            if (searchTerm && !searchData.includes(searchTerm)) {
+                showRow = false;
+            }
+            
+            if (statusFilter !== 'all' && statusData !== statusFilter) {
+                showRow = false;
+            }
+            
+            if (showRow) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

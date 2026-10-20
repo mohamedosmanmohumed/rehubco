@@ -1,0 +1,139 @@
+{% extends 'main/base.html' %}
+{% load humanize %}
+
+{% block page_title %}Finance Department{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Cash Flow Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Inflow</p>
+            <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">${{ cash_flow.inflow|floatformat:0|intcomma }}</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Outflow</p>
+            <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">${{ cash_flow.outflow|floatformat:0|intcomma }}</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Net Cash Flow</p>
+            <p class="text-2xl font-bold text-primary-600 dark:text-primary-400 mt-2">${{ cash_flow.net|floatformat:0|intcomma }}</p>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Forecast (Next Month)</p>
+            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">${{ cash_flow.forecast|floatformat:0|intcomma }}</p>
+        </div>
+    </div>
+
+    <!-- Milestone Billing -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Multi-Currency Milestone Billing</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 dark:border-slate-700">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Project</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Client</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Currency</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Total</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Paid</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Pending</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Next Milestone</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for billing in milestone_billing %}
+                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">{{ billing.project }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ billing.client }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ billing.currency }}</td>
+                        <td class="py-3 px-4 text-right text-gray-900 dark:text-white font-medium">${{ billing.total|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-right text-green-600 dark:text-green-400 font-medium">${{ billing.paid|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-right text-gray-700 dark:text-gray-300">${{ billing.pending|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ billing.next_milestone }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ billing.due }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Project Costing -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Project Costing Analysis</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 dark:border-slate-700">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Project</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Materials</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Labor</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Equipment</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Overhead</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Total</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Margin %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for costing in project_costing %}
+                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">{{ costing.project }}</td>
+                        <td class="py-3 px-4 text-right text-gray-700 dark:text-gray-300">${{ costing.materials|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-right text-gray-700 dark:text-gray-300">${{ costing.labor|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-right text-gray-700 dark:text-gray-300">${{ costing.equipment|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-right text-gray-700 dark:text-gray-300">${{ costing.overhead|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-right font-medium text-gray-900 dark:text-white">${{ costing.total|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-right">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400">
+                                {{ costing.margin }}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Supplier Invoices -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Supplier Invoices</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 dark:border-slate-700">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Invoice ID</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Supplier</th>
+                        <th class="text-right py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Amount</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Currency</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Due Date</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in supplier_invoices %}
+                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">{{ invoice.id }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ invoice.supplier }}</td>
+                        <td class="py-3 px-4 text-right text-gray-900 dark:text-white font-medium">{{ invoice.amount|floatformat:0|intcomma }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ invoice.currency }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ invoice.due }}</td>
+                        <td class="py-3 px-4">
+                            {% if invoice.status == 'Paid' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400">Paid</span>
+                            {% elif invoice.status == 'Approved' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">Approved</span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

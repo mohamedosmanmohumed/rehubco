@@ -1,0 +1,118 @@
+{% extends 'main/base.html' %}
+
+{% block page_title %}HR & Workforce{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Employee Directory -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Employee Directory</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 dark:border-slate-700">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Employee</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Role</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Department</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Branch</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Status</th>
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Certifications</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in employees %}
+                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="py-3 px-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white text-sm font-semibold mr-3">
+                                    {{ emp.name|slice:":2"|upper }}
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">{{ emp.name }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ emp.id }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ emp.role }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ emp.department }}</td>
+                        <td class="py-3 px-4 text-gray-700 dark:text-gray-300">{{ emp.branch }}</td>
+                        <td class="py-3 px-4">
+                            {% if emp.status == 'Active' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400">Active</span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400">On Leave</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">{{ emp.certifications }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Attendance Logs -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Attendance Logs (Last 3 Days)</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 dark:border-slate-700">
+                        <th class="text-left py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Date</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Present</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Absent</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Late</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">On Leave</th>
+                        <th class="text-center py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Attendance Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in attendance %}
+                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">{{ log.date }}</td>
+                        <td class="py-3 px-4 text-center text-green-600 dark:text-green-400 font-medium">{{ log.present }}</td>
+                        <td class="py-3 px-4 text-center text-red-600 dark:text-red-400 font-medium">{{ log.absent }}</td>
+                        <td class="py-3 px-4 text-center text-yellow-600 dark:text-yellow-400 font-medium">{{ log.late }}</td>
+                        <td class="py-3 px-4 text-center text-blue-600 dark:text-blue-400 font-medium">{{ log.on_leave }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-400">
+                                {% widthratio log.present|add:log.on_leave 156 100 %}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Field Technician Schedule -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-800 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Field Technician Schedule</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% for schedule in field_schedule %}
+            <div class="p-4 bg-gray-50 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ schedule.id }}</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-400">
+                        {{ schedule.date }}
+                    </span>
+                </div>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-1">{{ schedule.technician }}</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ schedule.project }}</p>
+                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    {{ schedule.location }}
+                </div>
+                <div class="pt-2 border-t border-gray-200 dark:border-slate-700">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Task: {{ schedule.task }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

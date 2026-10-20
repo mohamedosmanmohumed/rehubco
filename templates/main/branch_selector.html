@@ -1,0 +1,129 @@
+{% extends 'main/base.html' %}
+{% load humanize %}
+
+{% block page_title %}Regional Branch Map{% endblock %}
+
+{% block content %}
+<div class="space-y-6 relative z-10">
+    <!-- Map Section -->
+    <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Regional Operations Map</h3>
+
+        <!-- Simplified Map Visualization -->
+        <div class="relative bg-gradient-to-br from-green-50/80 via-blue-50/80 to-purple-50/80 dark:from-slate-800/80 dark:via-slate-900/80 dark:to-slate-800/80 rounded-2xl p-8 min-h-[400px] backdrop-blur-sm border border-gray-200/50 dark:border-slate-700/50">
+            <!-- Map Background -->
+            <div class="absolute inset-0 opacity-10">
+                <svg viewBox="0 0 800 600" class="w-full h-full">
+                    <!-- Simplified East Africa outline -->
+                    <path d="M200,100 L250,80 L350,70 L450,80 L550,100 L600,150 L620,250 L580,350 L500,450 L400,500 L300,480 L200,400 L150,300 L180,200 Z" fill="currentColor" class="text-gray-400"/>
+                </svg>
+            </div>
+
+            <!-- Branch Markers -->
+            {% for branch in branches %}
+            <div class="absolute cursor-pointer group" style="left: {{ branch.coordinates.1 }}%; top: {{ branch.coordinates.0 }}%;">
+                <div class="relative">
+                    <div class="w-8 h-8 gradient-bg rounded-2xl border-4 border-white dark:border-slate-800 shadow-xl shadow-primary-500/30 group-hover:scale-125 transition-transform duration-300"></div>
+                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 hidden group-hover:block glass-card rounded-2xl shadow-2xl p-4 min-w-[220px] z-10 transition-all duration-300">
+                        <h4 class="font-bold text-gray-900 dark:text-white">{{ branch.name }}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">{{ branch.country }}</p>
+                        <div class="mt-3 space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-gray-400">Capacity:</span>
+                                <span class="text-gray-900 dark:text-white font-semibold">{{ branch.capacity_mw }} MW</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-gray-400">Projects:</span>
+                                <span class="text-gray-900 dark:text-white font-semibold">{{ branch.projects }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-gray-400">Staff:</span>
+                                <span class="text-gray-900 dark:text-white font-semibold">{{ branch.staff }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 dark:text-gray-400">Revenue:</span>
+                                <span class="text-gray-900 dark:text-white font-semibold">${{ branch.revenue|floatformat:0|intcomma }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Legend -->
+            <div class="absolute bottom-4 left-4 glass-card rounded-2xl shadow-xl p-4">
+                <h4 class="font-semibold text-gray-900 dark:text-white text-sm mb-2">Legend</h4>
+                <div class="flex items-center space-x-2 text-xs">
+                    <div class="w-4 h-4 gradient-bg rounded-lg"></div>
+                    <span class="text-gray-700 dark:text-gray-300 font-medium">Active Branch</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branch Details Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for branch in branches %}
+        <div class="glass-card rounded-2xl p-6 card-hover transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-14 h-14 gradient-bg rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-700 dark:text-green-400 border border-green-200/50 dark:border-green-500/30">
+                    {{ branch.status }}
+                </span>
+            </div>
+            <h4 class="font-bold text-gray-900 dark:text-white text-lg mb-1">{{ branch.name }}</h4>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ branch.country }}</p>
+            <div class="space-y-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Capacity</span>
+                    <span class="text-gray-900 dark:text-white font-semibold">{{ branch.capacity_mw }} MW</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Projects</span>
+                    <span class="text-gray-900 dark:text-white font-semibold">{{ branch.projects }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Staff</span>
+                    <span class="text-gray-900 dark:text-white font-semibold">{{ branch.staff }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Revenue</span>
+                    <span class="text-gray-900 dark:text-white font-semibold">${{ branch.revenue|floatformat:0|intcomma }}</span>
+                </div>
+            </div>
+            <button class="w-full mt-4 px-4 py-2.5 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-600/50 hover:bg-white/90 dark:hover:bg-slate-700/90 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg shadow-gray-200/50 dark:shadow-slate-800/50">
+                View Details
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Regional Summary -->
+    <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Regional Performance Summary</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="text-center p-6 bg-gradient-to-br from-primary-500/10 to-accent-500/10 rounded-2xl backdrop-blur-sm border border-primary-200/50 dark:border-primary-500/30">
+                <p class="text-4xl font-bold gradient-text">45.8</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Total MW Installed</p>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl backdrop-blur-sm border border-blue-200/50 dark:border-blue-500/30">
+                <p class="text-4xl font-bold text-blue-600 dark:text-blue-400">23</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Active Projects</p>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl backdrop-blur-sm border border-purple-200/50 dark:border-purple-500/30">
+                <p class="text-4xl font-bold text-purple-600 dark:text-purple-400">156</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Total Staff</p>
+            </div>
+            <div class="text-center p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl backdrop-blur-sm border border-green-200/50 dark:border-green-500/30">
+                <p class="text-4xl font-bold text-green-600 dark:text-green-400">$3.15M</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Total Revenue</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
